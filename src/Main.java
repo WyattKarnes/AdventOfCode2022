@@ -21,11 +21,13 @@ public class Main {
                 new Day5(files[4]),
                 new Day6(files[5]),
                 new Day7(files[6]),
-                new Day8(files[7])
+                new Day8(files[7]),
+                new Day9(files[8]),
+                new Day10(files[9])
         };
 
         try {
-            days[7].solve();
+            days[9].solve();
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -38,7 +40,6 @@ public class Main {
                 throw new RuntimeException(e);
             }
         }
-
          */
     }
 

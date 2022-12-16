@@ -8,20 +8,15 @@ public class Day8 extends AdventOfCodeDay{
         super(input);
     }
 
-
     @Override
     public void solve() throws FileNotFoundException {
         Scanner scr = new Scanner(input);
 
-        TreeGraph graph = new TreeGraph();
         List<ArrayList<Tree>> trees = new ArrayList<>();
         int visibleTrees = 0;
-
-        // put all of the trees into a 2D list
         int row = 0;
 
         while(scr.hasNextLine()){
-
             // check if a string has been passed from before.
             // if not, grab a new line.
             String s1 = scr.nextLine();
@@ -47,12 +42,10 @@ public class Day8 extends AdventOfCodeDay{
                 if(def) {
                     tree = new Tree(t, true, true);
                     trees.get(row).add(tree);
-                    visibleTrees++;
                 } else {
                     tree = new Tree(t);
                     trees.get(row).add(tree);
                 }
-
 
             }
 
@@ -60,14 +53,134 @@ public class Day8 extends AdventOfCodeDay{
         }
 
 
+        int treesSeen = 0;
+        int max = 0;
+        for (int i = 0; i < trees.size(); i++) {
+
+            for (int j = 0; j < trees.get(i).size(); j++) {
+
+                Tree cur = trees.get(i).get(j);
+
+                Tree check;
+
+                // finding an edge makes cur a visible tree.
+                // finding a tree taller than or equal to cur lets us stop without making a connection
+                // finding a tree shorter than cur means we add a connection to the graph.
+
+                // search left, look for the edge, or for a blockage.
+
+                for (int k = j - 1; k >= 0; k--) {
+
+                    check = trees.get(i).get(k);
+                    treesSeen++;
+
+                    if (check.height >= cur.height) {
+                        break;
+                    } else {
+
+                        if (check.isEdge) {
+                            cur.visible = true;
+                        }
+
+                    }
+
+                }
+
+                cur.score *= treesSeen;
+                treesSeen = 0;
+
+                // search right, look for the edge, or for a blockage.
+                for (int k = j + 1; k < trees.get(i).size(); k++) {
+
+                    check = trees.get(i).get(k);
+                    treesSeen++;
+
+                    if (check.height >= cur.height) {
+                        break;
+                    } else {
+
+                        if (check.isEdge) {
+                            cur.visible = true;
+                        }
+
+                    }
+
+                }
+
+                cur.score *= treesSeen;
+                treesSeen = 0;
+
+                // search up, look for the edge, or for a blockage.
+                for (int k = i - 1; k >= 0; k--) {
+
+                    check = trees.get(k).get(j);
+                    treesSeen++;
+
+                    if (check.height >= cur.height) {
+                        break;
+                    } else {
+
+                        if (check.isEdge) {
+                            cur.visible = true;
+                        }
+
+                    }
+
+                }
+
+                cur.score *= treesSeen;
+                treesSeen = 0;
+
+                // search down, look for the edge, or for a blockage.
+                for (int k = i + 1; k < trees.size(); k++) {
+
+                    check = trees.get(k).get(j);
+                    treesSeen++;
+
+                    if (check.height >= cur.height) {
+                        break;
+                    } else {
+
+                        if (check.isEdge) {
+                            cur.visible = true;
+                        }
+
+                    }
+
+                }
+
+                cur.score *= treesSeen;
+                treesSeen = 0;
+
+                if (cur.visible) {
+                    visibleTrees++;
+                }
+
+                // see if this tree is more scenic than the last.
+                if(cur.score > max){
+                    max = cur.score;
+                }
+
+            }
+
+        }
+
+
+
+        print(visibleTrees);
+        print(max);
+
     }
 
-    private class Tree{
+
+    private class Tree {
 
         int height;
-
+        int score;
         boolean visible;
         boolean isEdge;
+
+
 
         Tree(int height){
             this(height, false, false);
@@ -77,7 +190,7 @@ public class Day8 extends AdventOfCodeDay{
             this.height = height;
             this.visible = visible;
             this.isEdge = isEdge;
-
+            this.score = 1;
         }
 
         @Override
@@ -86,67 +199,4 @@ public class Day8 extends AdventOfCodeDay{
         }
     }
 
-    private class TreeGraph {
-        // a map of Trees and their connections
-        HashMap<Tree, List<Tree>> map = new HashMap<>();
-
-        public void addNewTree(Tree t){
-            map.put(t, new LinkedList<>());
-        }
-
-        // tree connections are all bidirectional
-        public void addEdge(Tree source, Tree destination){
-
-            if(!map.containsKey(source)){
-                addNewTree(source);
-            }
-
-            if(!map.containsKey(destination)){
-                addNewTree(destination);
-            }
-
-            map.get(source).add(destination);
-            map.get(destination).add(source);
-
-        }
-
-        public void printVertexCount(){
-            print("Total Vertices: " + map.keySet().size());
-        }
-
-        public void countEdges(){
-            int count = 0;
-            for (Tree t : map.keySet()) {
-               count += map.get(t).size();
-            }
-            // since all connections are bidirectional, we have to divide the count by 2 for an accurate number
-            count /= 2;
-
-            print("Total Edges ");
-        }
-
-        public boolean containsTree(Tree t){
-            if(map.containsKey(t)){
-                print("The graph does contain that tree");
-                return true;
-            }
-
-            print("The graph does not contain such a tree");
-            return false;
-        }
-
-        public boolean containsEdge(Tree t1, Tree t2){
-            if(map.get(t1).contains(t2)){
-                print("There is visibility between these trees");
-                return true;
-            }
-
-            print("There is no visibility between these trees.");
-            return false;
-        }
-
-        public boolean isEmpty(){
-            return map.isEmpty();
-        }
-    }
 }

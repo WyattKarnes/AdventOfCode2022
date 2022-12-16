@@ -18,36 +18,26 @@ public class Day1 extends AdventOfCodeDay{
 
         List<Integer> elves = new ArrayList<>();
 
-        List<String> strings = new ArrayList<>();
-
-
-        // compile a list of Strings.
-
+        int total = 0;
         while (scr.hasNextLine()) {
 
             // read in a line from the scanner
-            String tmp = scr.nextLine();
+            String s = scr.nextLine();
 
             // check if the line was NOT empty
-            if (!tmp.isEmpty()) {
+            if (!s.isEmpty()) {
 
-                // add non-empty strings to the list
-                strings.add(tmp);
+                total += Integer.parseInt(s);
+
 
             } else {
 
                 // if we find an empty string, we have finished finding all calories for that particular elf.
                 // total them up, and create a new Elf object that stores the number of calories.
-                int sum = 0;
+                elves.add(total);
+                total = 0;
 
-                for (int i = 0; i < strings.size(); i++) {
-                    sum += Integer.parseInt(strings.get(i));
-                }
 
-                // store the new elf
-                elves.add(sum);
-                // clear strings for the next run
-                strings.clear();
             }
 
         }
@@ -61,7 +51,6 @@ public class Day1 extends AdventOfCodeDay{
         bigBoys.add(elves.get(biggest));
 
         for (int i = 1; i < elves.size(); i++) {
-
 
 
             if(elves.get(i) > elves.get(biggest)){
